@@ -1,10 +1,15 @@
+
+.alignRight {
+  align-items: right;
+}
+
 .main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  align-items: left;
   padding: 6rem;
-  min-height: 100vh;
+  min-height: 75vh;
 }
 
 .description {
@@ -33,6 +38,7 @@
   border: 1px solid rgba(var(--callout-border-rgb), 0.3);
   border-radius: var(--border-radius);
 }
+
 
 .code {
   font-weight: 700;

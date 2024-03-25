@@ -1,10 +1,11 @@
 "use client"
 
-import Image from "next/image";
 import styles from "./page.module.css";
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Button, Typography } from "@mui/material";
+import PlaylistCards from "./PlaylistCards";
 
 export default function Home() {
   const CLIENT_ID = process.env.REACT_APP_SECRET_CLIENT_ID;
@@ -15,26 +16,24 @@ export default function Home() {
   const [token, setToken] = useState("");
   const [playlists, setPlaylists] = useState([]);
 
-  const logout = () => {
+  const onLogOut = () => {
     setToken("");
     window.localStorage.removeItem("token");
+    setPlaylists([]);
   };
 
   const getPlaylists = async () => {
-    const { data } = await axios.get("https://api.spotify.com/v1/me/playlists", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-    });
-
-    setPlaylists(data.items.map(p => p.name));
-  };
-
-  // TODO: use component to display each?
-  const showPlaylists = () => {
-    return playlists.map(playlist => (
-      <p key={playlist}>{playlist}</p>
-    ))
+    try {
+      const { data } = await axios.get("https://api.spotify.com/v1/me/playlists", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+      });
+      setPlaylists(data.items.map(p => p.name));
+      console.log(playlists);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -51,20 +50,35 @@ export default function Home() {
     setToken(token);
   }, []);
 
-  // useEffect(() => {
-  //   getPlaylists();
-  // }, [token]);
-  
+  useEffect(() => {
+    getPlaylists();
+  }, [token]);
+
   // TODO: proper login/logout layout
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className={styles.main}>
+      <header className={styles.header}>
         {!token ?
-          <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}>Login to Spotify</a>
-          : <button onClick={logout}>Logout</button>
+          <Button
+              color="secondary"
+              variant="contained"
+              href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}
+              classes={styles.rightAlign}>
+                Login to Spotify
+          </Button>
+            : 
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={onLogOut}
+              classes={styles.rightAlign}
+            >
+              Logout
+            </Button>
         }
-        {/* {showPlaylists()} */}
+        <Typography variant="h1">song description adder</Typography>
       </header>
+      <PlaylistCards playlists={playlists}/>
     </div>
   );
 }
