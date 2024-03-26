@@ -29,7 +29,7 @@ export default function Home() {
           Authorization: `Bearer ${token}`
         },
       });
-      setPlaylists(data.items.map(p => p.name));
+      setPlaylists(data.items);
       console.log(playlists);
     } catch (error) {
       console.error(error);
