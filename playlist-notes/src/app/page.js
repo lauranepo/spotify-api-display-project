@@ -8,7 +8,7 @@ import { Button, Typography } from "@mui/material";
 import PlaylistCards from "./PlaylistCards";
 
 export default function Home() {
-  const CLIENT_ID = process.env.REACT_APP_SECRET_CLIENT_ID;
+  const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
   const REDIRECT_URI = "http://localhost:3000";
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
   const RESPONSE_TYPE = "token";
