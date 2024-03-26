@@ -30,7 +30,6 @@ export default function Home() {
         },
       });
       setPlaylists(data.items);
-      console.log(playlists);
     } catch (error) {
       console.error(error);
     }
@@ -57,7 +56,7 @@ export default function Home() {
   // TODO: proper login/logout layout
   return (
     <div className={styles.main}>
-      <header className={styles.header}>
+      <header>
         {!token ?
           <Button
               color="secondary"
