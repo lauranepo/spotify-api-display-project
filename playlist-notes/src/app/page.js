@@ -13,7 +13,12 @@ export default function Home() {
   const REDIRECT_URI = "http://localhost:3000/";
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
   const RESPONSE_TYPE = "token";
-  const SCOPES = ["playlist-read-private", "playlist-read-collaborative"];
+  const SCOPES = [
+    "playlist-read-private",
+    "playlist-read-collaborative",
+    "user-read-private",
+    "user-library-read",
+  ];
 
   const [token, setToken] = useState("");
   const [playlists, setPlaylists] = useState([]);
@@ -47,13 +52,13 @@ export default function Home() {
         console.error("No playlists found in response");
       }
     } catch (error) {
-      console.error(error);
+      console.error(
+        "Error response:",
+        error.response.status,
+        error.response.data,
+      );
     }
   };
-
-  useEffect(() => {
-    console.log(playlists);
-  }, [playlists]);
 
   useEffect(() => {
     const hash = window.location.hash;
