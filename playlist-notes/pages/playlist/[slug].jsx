@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Button, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -7,12 +7,15 @@ export default function Playlist() {
   const router = useRouter();
   const playlist_id = router.query.slug;
   const [token, setToken] = useState("");
+  const [playlistDetails, setPlaylistDetails] = useState([]);
   const [tracks, setTracks] = useState([]);
   const [audioFeatures, setAudioFeatures] = useState({});
+  const [popularityAverage, setPopularityAverage] = useState();
+  const [percentExplicit, setPercentExplicit] = useState();
 
-  const getPlaylistTracks = async (playlist_id) => {
+  const getPlaylistDetails = async () => {
     if (!playlist_id) {
-      console.error("playlist_id is undefined");
+      console.error("playlistId is undefined");
       return;
     } else if (!token) {
       console.error("missing auth token");
@@ -29,22 +32,36 @@ export default function Playlist() {
           },
         },
       );
-      if (data.tracks === undefined) {
-        console.error("data.tracks is undefined");
-        return;
-      }
-      let trackIds = data.tracks.items.map((element) => {
-        return element.track.id;
-      });
-      setTracks(trackIds);
+      setPlaylistDetails(data);
+      setTracks(data.tracks.items);
     } catch (error) {
       console.error(error);
     }
   };
 
+  // set state for tracks
+  const getPopularityAverage = () => {
+    let popularitySum = 0;
+    let explicitCount = 0;
+    let numOfTracks = tracks.length;
+    if (numOfTracks === 0) {
+      console.log("no tracks found");
+      return;
+    } else {
+      tracks.forEach((element) => {
+        popularitySum += element?.track?.popularity;
+        if (element.track.explicit) {
+          explicitCount += 1;
+        }
+      });
+      setPopularityAverage(popularitySum / numOfTracks);
+      setPercentExplicit((explicitCount / numOfTracks) * 100);
+    }
+  };
+
   const getAudioFeatures = async () => {
     try {
-      if (!tracks || tracks.length === 0) {
+      if (!playlist_id) {
         console.error("missing track_ids");
         return;
       }
@@ -79,13 +96,23 @@ export default function Playlist() {
 
   useEffect(() => {
     if (token && playlist_id) {
-      getPlaylistTracks(playlist_id);
+      getPlaylistDetails(playlist_id);
     }
   }, [token, playlist_id]);
 
   useEffect(() => {
-    console.log(audioFeatures);
-  }, [audioFeatures]);
+    if (playlistDetails?.tracks?.items) {
+      setTracks(playlistDetails.tracks.items);
+    }
+  }, [playlistDetails]);
+
+  useEffect(() => {
+    // console.log(playlistDetails);
+    // console.log(playlistDetails?.images[0]?.url);
+    if (playlistDetails.length !== 0) {
+      getPopularityAverage();
+    }
+  }, [playlistDetails]);
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -101,21 +128,39 @@ export default function Playlist() {
         console.error("No access token found in URL");
       }
     }
-    console.log("playlist_id  " + playlist_id);
     setToken(token);
   }, []);
 
-  useEffect(() => {
-    console.log("track ids: " + tracks);
-    getAudioFeatures();
-  }, [tracks]);
+  // useEffect(() => {
+  //   console.log("track ids: " + tracks);
+  //   getAudioFeatures();
+  // }, [tracks]);
 
   return (
     <>
       <Button href="/" color="secondary" variant="contained" size="medium">
-        Go Back
+        Back to Playlists
       </Button>
-      <Typography>playlist id: {playlist_id}</Typography>
+      <Typography variant="h2">{playlistDetails.name}</Typography>
+      {playlistDetails?.images && (
+        <Box
+          component="img"
+          sx={{ height: 250 }}
+          alt="playlist cover"
+          src={playlistDetails.images[0].url}
+        />
+      )}
+      <Typography>
+        popularity score:{" "}
+        {popularityAverage ? popularityAverage.toFixed(2) : "error"}
+      </Typography>
+      <Typography>
+        percent explicit:{" "}
+        {percentExplicit ? percentExplicit.toFixed(2) : "error"}%
+      </Typography>
+      {tracks.map((element, index) => {
+        return <Typography key={index}>{element.name}</Typography>;
+      })}
     </>
   );
 }

@@ -6,7 +6,8 @@ import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Button, Typography } from "@mui/material";
-import PlaylistCards from "./PlaylistCards";
+import PlaylistCards from "./components/PlaylistCards";
+import ExpiredModal from "./components/ExpiredModal";
 
 export default function Home() {
   const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
@@ -21,6 +22,7 @@ export default function Home() {
   ];
 
   const [token, setToken] = useState("");
+  const [shouldRefreshToken, setShouldRefreshToken] = useState(false);
   const [playlists, setPlaylists] = useState([]);
 
   const onLogOut = () => {
@@ -47,16 +49,15 @@ export default function Home() {
               return item;
             }
           }),
-        ); // Set the playlists to state if data.items exists
+        );
       } else {
         console.error("No playlists found in response");
       }
     } catch (error) {
-      console.error(
-        "Error response:",
-        error.response.status,
-        error.response.data,
-      );
+      if (error.response.status === 401) {
+        setShouldRefreshToken(true);
+      }
+      console.error(error.response.status, error.response.data);
     }
   };
 
@@ -83,6 +84,12 @@ export default function Home() {
       getPlaylists();
     }
   }, [token]);
+
+  useEffect(() => {
+    if (shouldRefreshToken) {
+      window.localStorage.clear("token");
+    }
+  }, [shouldRefreshToken]);
 
   return (
     <div className={styles.main}>
@@ -112,8 +119,9 @@ export default function Home() {
       {playlists != null ? (
         <PlaylistCards playlists={playlists} />
       ) : (
-        <Typography>No playlists available.</Typography>
+        <Typography>no playlists available</Typography>
       )}
+      {shouldRefreshToken && <ExpiredModal shouldShow={shouldRefreshToken} />}
     </div>
   );
 }
