@@ -69,14 +69,6 @@ export default function Playlist() {
         console.error("missing auth token");
         return;
       }
-      let trackIdsString = "";
-      // tracks.forEach((element, index) => {
-      //   if (index === 0) {
-      //     trackIdsString = element;
-      //   } else {
-      //     trackIdsString = trackIdsString + "%" + element;
-      //   }
-      // });
       const { data } = await axios.get(
         `https://api.spotify.com/v1/audio-features/ids=${encodeURIComponent(
           tracks,
@@ -107,8 +99,6 @@ export default function Playlist() {
   }, [playlistDetails]);
 
   useEffect(() => {
-    // console.log(playlistDetails);
-    // console.log(playlistDetails?.images[0]?.url);
     if (playlistDetails.length !== 0) {
       getPopularityAverage();
     }
@@ -130,11 +120,6 @@ export default function Playlist() {
     }
     setToken(token);
   }, []);
-
-  // useEffect(() => {
-  //   console.log("track ids: " + tracks);
-  //   getAudioFeatures();
-  // }, [tracks]);
 
   return (
     <>
