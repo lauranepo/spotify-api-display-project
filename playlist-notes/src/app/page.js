@@ -5,7 +5,6 @@ import styles from "./page.module.css";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Button, Typography } from "@mui/material";
 import PlaylistCards from "./components/PlaylistCards";
 import ExpiredModal from "./components/ExpiredModal";
 import SimpleAppBar from "./components/SimpleAppBar";
@@ -86,7 +85,6 @@ export default function Home() {
 
   useEffect(() => {
     setIsAuthenticated(determineIsAuthenticated());
-
     if (shouldRefreshToken) {
       window.localStorage.clear("token");
     }

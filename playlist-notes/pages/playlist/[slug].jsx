@@ -13,6 +13,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import TrackCards from "@/app/components/TrackCards";
 
 export default function Playlist() {
   const router = useRouter();
@@ -90,7 +91,6 @@ export default function Playlist() {
           },
         },
       );
-      console.log(data);
       setAudioFeatures(data);
     } catch (error) {
       console.error(error);
@@ -107,9 +107,6 @@ export default function Playlist() {
     if (playlistDetails?.tracks?.items) {
       setTracks(playlistDetails.tracks.items);
     }
-  }, [playlistDetails]);
-
-  useEffect(() => {
     if (playlistDetails.length !== 0) {
       getPopularityAverage();
     }
@@ -156,11 +153,19 @@ export default function Playlist() {
           </Toolbar>
         </AppBar>
       </Box>
-      <div style={{ marginTop: 80 }}>
+      <div style={{ marginTop: 80, backgroundColor: "black" }}>
         <Stack>
           <Item elevation={0}>
-            {" "}
             <Typography variant="h3">{playlistDetails.name}</Typography>
+            <Typography variant="h5">
+              created by{" "}
+              <a
+                href={`https://open.spotify.com/user/${playlistDetails.owner?.id}`}
+                target="_blank"
+              >
+                {playlistDetails.owner?.display_name}
+              </a>
+            </Typography>
           </Item>
           <Item elevation={0}>
             {playlistDetails?.images && (
@@ -174,19 +179,27 @@ export default function Playlist() {
           </Item>
           <Item elevation={0}>
             <Typography>
-              popularity score:{" "}
-              {popularityAverage ? popularityAverage.toFixed(2) : "error"}
+              avg popularity score:{" "}
+              {popularityAverage !== undefined
+                ? popularityAverage.toFixed(2)
+                : "error"}
             </Typography>
           </Item>
           <Item elevation={0}>
             <Typography>
               percent explicit:{" "}
-              {percentExplicit ? percentExplicit.toFixed(2) : "error"}%
+              {percentExplicit !== undefined
+                ? percentExplicit.toFixed(2)
+                : "error"}
+              %
             </Typography>
           </Item>
-          {/* {tracks.map((element, index) => {
-            return <Typography key={index}>{element.name}</Typography>;
-          })} */}
+          <Item elevation={0}>
+            <Typography variant="h4" padding={5}>
+              tracks in playlist
+            </Typography>
+            <TrackCards tracks={tracks} />
+          </Item>
         </Stack>
       </div>
     </>
