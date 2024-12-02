@@ -28,7 +28,7 @@ export default function ExpiredModal(shouldShow) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+          <Typography id="modal-modal-title" variant="h4">
             authorization error
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>

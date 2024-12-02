@@ -13,7 +13,12 @@ const PlaylistCards = ({ playlists }) => {
     return <Typography>no playlists</Typography>;
   } else {
     return (
-      <Grid container spacing={2}>
+      <Grid
+        container
+        spacing={3}
+        direction="row"
+        sx={{ justifyContent: "center", alignItems: "center" }}
+      >
         {playlists.map((playlist, index) => {
           if (playlist === null) return;
           return (
