@@ -93,7 +93,7 @@ export default function Home() {
   return (
     <>
       <SimpleAppBar isLoggedIn={isAuthenticated} onLogout={onLogout} />
-      <div className={styles.main}>
+      <div className={styles.main} style={{ backgroundColor: "#ffcdb2" }}>
         <PlaylistCards playlists={playlists} />
         {shouldRefreshToken && <ExpiredModal shouldShow={shouldRefreshToken} />}
       </div>

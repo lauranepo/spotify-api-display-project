@@ -141,19 +141,24 @@ export default function Playlist() {
 
   return (
     <>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="fixed">
+      <Box sx={{ flexGrow: 1, backgroundColor: "#ffcdb2" }}>
+        <AppBar position="fixed" style={{ backgroundColor: "#e5989b" }}>
           <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
               playlist analyzer
             </Typography>
-            <Button href="/" float="right" variant="contained">
+            <Button
+              href="/"
+              float="right"
+              variant="contained"
+              style={{ backgroundColor: "#ffcdb2", fontWeight: "bold" }}
+            >
               back to playlists
             </Button>
           </Toolbar>
         </AppBar>
       </Box>
-      <div style={{ marginTop: 80, backgroundColor: "black" }}>
+      <div style={{ marginTop: 80 }}>
         <Stack>
           <Item elevation={0}>
             <Typography variant="h3">{playlistDetails.name}</Typography>
@@ -195,7 +200,7 @@ export default function Playlist() {
             </Typography>
           </Item>
           <Item elevation={0}>
-            <Typography variant="h4" padding={5}>
+            <Typography variant="h4" sx={{ paddingTop: 4 }}>
               tracks in playlist
             </Typography>
             <TrackCards tracks={tracks} />

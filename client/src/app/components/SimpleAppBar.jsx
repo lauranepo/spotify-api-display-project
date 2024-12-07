@@ -22,9 +22,9 @@ export default function SimpleAppBar({ isLoggedIn, onLogout }) {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed">
+      <AppBar position="fixed" style={{ backgroundColor: "#e5989b" }}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
             playlist analyzer
           </Typography>
           {!isLoggedIn ? (
@@ -32,6 +32,7 @@ export default function SimpleAppBar({ isLoggedIn, onLogout }) {
               float="right"
               variant="contained"
               href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPES}`}
+              style={{ backgroundColor: "#ffcdb2", fontWeight: "bold" }}
             >
               Login
             </Button>
@@ -40,6 +41,7 @@ export default function SimpleAppBar({ isLoggedIn, onLogout }) {
               float="right"
               variant="contained"
               onClick={() => onLogout()}
+              style={{ backgroundColor: "#ffcdb2", fontWeight: "bold" }}
             >
               Logout
             </Button>
