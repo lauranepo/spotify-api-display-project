@@ -7,7 +7,7 @@ import {
   Typography,
   AppBar,
   Toolbar,
-  Stack,
+  Container,
   Paper,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -130,7 +130,6 @@ export default function Playlist() {
   }, []);
 
   const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: "#fff",
     ...theme.typography.body2,
     padding: theme.spacing(1),
     textAlign: "center",
@@ -158,8 +157,7 @@ export default function Playlist() {
           </Toolbar>
         </AppBar>
       </Box>
-      <div style={{ marginTop: 80 }}>
-        <Stack>
+         <Container style={{ marginTop: 80, backgroundColor: "#e5989b" }}>
           <Item elevation={0}>
             <Typography variant="h3">{playlistDetails.name}</Typography>
             <Typography variant="h5">
@@ -205,8 +203,7 @@ export default function Playlist() {
             </Typography>
             <TrackCards tracks={tracks} />
           </Item>
-        </Stack>
-      </div>
+        </Container>
     </>
   );
 }

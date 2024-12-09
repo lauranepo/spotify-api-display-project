@@ -13,14 +13,14 @@ const TrackCards = ({ tracks }) => {
     return <Typography>no tracks</Typography>;
   } else {
     return (
-      <Box sx={{ padding: 10, maxWidth: 1000 }}>
+      <Box sx={{ position: "relative", width: "100%", padding: "30px 40px", margin: "10px"}}>
         <Masonry columns={4} spacing={2}>
           {tracks.map((track, index) => {
             if (track === null) return;
             return (
               <Card
                 sx={{
-                  maxWidth: 200,
+                  maxWidth: 250,
                 }}
                 variant="outlined"
                 key={index}
@@ -31,7 +31,7 @@ const TrackCards = ({ tracks }) => {
                 >
                   <CardMedia
                     component="image"
-                    sx={{ height: 200, width: 200 }}
+                    sx={{ height: 250, width: 250 }}
                     image={track.track.album.images[0]?.url}
                     title="track art"
                   />

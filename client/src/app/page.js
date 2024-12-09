@@ -24,6 +24,32 @@ export default function Home() {
     setPlaylists([]);
   };
 
+  const handleCallback = async () => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const state = params.get("state");
+
+    if (code) {
+      try {
+        const response = await axios.post("http://localhost:8080/callback", {
+          code,
+          state,
+        });
+
+        console.log("Access Token:", response.data.access_token);
+        // Store token for future API calls
+      } catch (error) {
+        console.error("Error exchanging code:", error);
+      }
+    } else {
+      console.error("No authorization code found.");
+    }
+  };
+
+  useEffect(() => {
+    handleCallback();
+  }, []);
+
   const [isAuthenticated, setIsAuthenticated] = useState(
     determineIsAuthenticated(),
   );
@@ -76,19 +102,19 @@ export default function Home() {
     setToken(token);
   }, []);
 
-  useEffect(() => {
-    setIsAuthenticated(determineIsAuthenticated());
-    if (token) {
-      getPlaylists();
-    }
-  }, [token]);
+  // useEffect(() => {
+  //   setIsAuthenticated(determineIsAuthenticated());
+  //   if (token) {
+  //     getPlaylists();
+  //   }
+  // }, [token]);
 
-  useEffect(() => {
-    setIsAuthenticated(determineIsAuthenticated());
-    if (shouldRefreshToken) {
-      window.localStorage.clear("token");
-    }
-  }, [shouldRefreshToken]);
+  // useEffect(() => {
+  //   setIsAuthenticated(determineIsAuthenticated());
+  //   if (shouldRefreshToken) {
+  //     window.localStorage.clear("token");
+  //   }
+  // }, [shouldRefreshToken]);
 
   return (
     <>
