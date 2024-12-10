@@ -14,7 +14,8 @@ export default function SimpleAppBar({ isLoggedIn, onLogout }) {
   const onClick = async () => {
     try {
       const response = await axios.get('http://localhost:8080/login');
-      const { url } = response.data;
+      const { url, codeVerifier } = response.data;
+      window.localStorage.setItem('code_verifier', codeVerifier);
       window.location.href = url;
     } catch (error) {
       console.error(error);
