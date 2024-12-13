@@ -3,33 +3,34 @@
 
 import styles from "./page.module.css";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PlaylistCards from "./components/PlaylistCards";
 import ExpiredModal from "./components/ExpiredModal";
 import SimpleAppBar from "./components/SimpleAppBar";
+import { useSearchParams } from "next/navigation";
 
 export default function Home() {
-  const [token, setToken] = useState("");
-  const [shouldRefreshToken, setShouldRefreshToken] = useState(false);
+  const searchParams = useSearchParams();
+  const codeVerifier = searchParams.get("code");
+  const state = searchParams.get("state");
+
   const [playlists, setPlaylists] = useState([]);
 
-  const determineIsAuthenticated = () => {
-    return token;
+  const getPlaylists = async () => {
+    if (codeVerifier) {
+      await axios.get("http://localhost:8080/playlists").then((res) => {
+        setPlaylists(res.data);
+      });
+    }
   };
 
-  const onLogout = () => {
-    setToken("");
-    window.localStorage.removeItem("token");
-    setPlaylists([]);
-  };
-
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    determineIsAuthenticated(),
-  );
+  useEffect(() => {
+    getPlaylists();
+  }, [codeVerifier]);
 
   return (
     <>
-      <SimpleAppBar isLoggedIn={isAuthenticated} onLogout={onLogout} />
+      <SimpleAppBar isLoggedIn={state !== ""} />
       <div className={styles.main} style={{ backgroundColor: "#ffcdb2" }}>
         <PlaylistCards playlists={playlists} />
         {/* {shouldRefreshToken && <ExpiredModal shouldShow={shouldRefreshToken} />} */}
