@@ -5,11 +5,9 @@ import querystring from 'querystring';
 import crypto from "node:crypto";
 import fetch from "node-fetch";
 import session from "express-session";
-import { access } from "node:fs";
 
 const PORT = process.env.SERVER_PORT;
 const CLIENT_ID = process.env.CLIENT_ID;
-const SECRET_KEY = process.env.SECRET_KEY;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 
 const app = express();
@@ -18,11 +16,10 @@ const app = express();
 app.use(session({
     secret: 'keyboard cat',
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     genid: function() {
         return crypto.randomUUID();
       },
-    cookie: { maxAge: 60000 }
 }));
 
 // Configure CORS
@@ -36,7 +33,8 @@ app.use(cors({
         return callback(new Error(msg), false);
       }    
       return callback(null, true);
-    }, credentials: true
+    }, 
+    credentials: true,
   } ));
 
 const generateRandomString = (length) => {
@@ -72,6 +70,7 @@ const getToken = async (code, codeVerifier) => {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
+        credentials: "include",
         body: params
     });
     const response = await body.json();
@@ -83,7 +82,7 @@ app.get('/login', async (req, res) => {
     const codeVerifier = generateRandomString(64);
     const hashed = await sha256(codeVerifier)
     const codeChallenge = base64urlencode(hashed);
-    const scope = "playlist-read-private playlist-read-collaborative";
+    const scope = "playlist-read-private playlist-read-collaborative user-read-private user-read-email";
 
     const params = {
         client_id: CLIENT_ID,
@@ -105,24 +104,55 @@ app.get('/check-session', (req, res) => {
 
 // Get access token from auth
 app.get('/callback', async (req, res) => {
-    let code = req.query.code || null;
-    let code_verifier = req.query.code_verifier || null;
-    let session_data = await getToken(code, code_verifier);
-    if (session_data === undefined) {
+    let code = req.query?.code;
+    let code_verifier = req.query?.code_verifier;
+    let sessionData = await getToken(code, code_verifier);
+    if (sessionData === undefined) {
         return;    
     }
     req.session.user = {
-        access_token: session_data.access_token,
-        token_type: session_data.token_type, 
-        expires_in: session_data.expires_in,
-        refresh_token: session_data.refresh_token, 
-        scope: session_data.scope 
-    }
-    }
-);
+        accessToken: sessionData.access_token,
+        tokenType: sessionData.token_type,
+        expiresIn: sessionData.expires_in,
+        refreshToken: sessionData.refresh_token,
+        scope: sessionData.scope
+    };
+    res.setHeader('Content-Type', 'application/json');
+    res.send(req.session.user);
+});
+
+app.get('/profile', async (req, res) => {
+    console.log("profile call " + req.session.id);
+    let accessToken = req.session.user?.accessToken;
+    console.log("access token " + req.session.user?.accessToken);
+    const body = await fetch(`https://api.spotify.com/v1/me`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        },
+        credentials: "include",
+    }).catch((error) => {
+        console.log(error);
+    });
+    res.send(body);
+})
+
+app.get('/playlists', async (req, res) => {
+    let access_token = req.session.user.access_token || await getToken();
+    let user_id = req.query.userId;
+    const body = await fetch(`https://api.spotify.com/v1/users/${user_id}/playlists`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${access_token}`
+        },
+        credentials: "include",
+    }).then((res) => {
+        console.log(res);
+        return res.body;
+    });
+})
 
 app.get('/refresh_token', function (req, res) {
-
     var refresh_token = req.query.refresh_token;
     var authOptions = {
         url: 'https://accounts.spotify.com/api/token',

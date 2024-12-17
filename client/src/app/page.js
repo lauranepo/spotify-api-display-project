@@ -31,9 +31,8 @@ export default function Home() {
   return (
     <>
       <SimpleAppBar isLoggedIn={state !== ""} />
-      <div className={styles.main} style={{ backgroundColor: "#ffcdb2" }}>
+      <div className={styles.main}>
         <PlaylistCards playlists={playlists} />
-        {/* {shouldRefreshToken && <ExpiredModal shouldShow={shouldRefreshToken} />} */}
       </div>
     </>
   );
