@@ -7,7 +7,7 @@ import PlaylistCards from "@/app/components/PlaylistCards";
 const Dashboard = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const code = searchParams.get("code");
+  const [code, setCode] = useState(null);
   const state = searchParams.get("state");
   const [codeVerifier, setCodeVerifier] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -15,43 +15,73 @@ const Dashboard = () => {
   const [callback, setCallback] = useState(false);
 
   useEffect(() => {
-    const getProfile = async () => {
-      const verifier = window.localStorage.getItem("code_verifier");
+    const verifier = window.localStorage.getItem("code_verifier");
+    console.log(verifier);
+    if (verifier !== null) {
       setCodeVerifier(verifier);
-      await axios
-        .get("http://localhost:8080/profile", { withCredentials: true })
-        .then((res) => {
-          setProfile(res);
-        });
-    };
-    getProfile();
+    }
+    if (code === null) {
+      let urlCode = searchParams.get("code");
+      console.log(urlCode);
+      if (urlCode !== null) {
+        setCode(urlCode);
+      }
+    }
   }, []);
 
-  // useEffect(() => {
-  //   console.log(profile);
-  // }, [profile]);
+  useEffect(() => {
+    if (codeVerifier === null) {
+      setCallback(false);
+    }
+  }, [codeVerifier]);
+
+  useEffect(() => console.log(profile), [profile]);
 
   useEffect(() => {
+    console.log(callback);
     const getCallback = async () => {
+      console.log(window.location.href);
+      let paramCode = searchParams.get("code");
+      let paramCodeVerifier = window.localStorage.getItem("code_verifier");
+      console.log(paramCode + " " + paramCodeVerifier);
       try {
-        const response = await axios.get("http://localhost:8080/callback", {
-          params: { code, code_verifier: codeVerifier },
-          withCredentials: true,
-        });
-        console.log(response.data);
-        setCallback(true);
+        await axios
+          .get("http://localhost:8080/callback", {
+            params: { code: paramCode, code_verifier: paramCodeVerifier },
+            withCredentials: true,
+          })
+          .then((res) => {
+            setCallback(true);
+          });
       } catch (error) {
         console.error("Error during authentication:", error);
         setCallback(false);
       }
     };
-    getCallback();
-  }, [code, codeVerifier]); // Dependencies ensure it runs when code or codeVerifier changes
+    if (!callback && codeVerifier) {
+      getCallback();
+    }
+  }, [callback]);
+
+  useEffect(() => {
+    if (callback) {
+      const getProfile = async () => {
+        await axios
+          .get("http://localhost:8080/profile", { withCredentials: true })
+          .then((res) => {
+            setProfile(res.data.data);
+          });
+      };
+      if (callback) {
+        getProfile();
+      }
+    }
+  }, [callback]);
 
   return (
     <div>
       {/* <PlaylistCards playlists={playlists}/> */}
-      <div>profile</div>
+      <div>name: {profile?.display_name}</div>
     </div>
   );
 };
