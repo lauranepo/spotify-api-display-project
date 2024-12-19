@@ -97,11 +97,11 @@ app.get('/login', async (req, res) => {
 
 // Get access token from auth
 app.get('/callback', async (req, res) => {
-    if (req.session.user !== undefined) {
-        console.log("callback user data " + JSON.stringify(req.session.user))
-        res.send({"message": "already authenticated"});
-        return;
-    }
+    // if (req.session.user !== undefined) {
+    //     console.log("callback user data " + JSON.stringify(req.session.user))
+    //     res.send({"message": "already authenticated"});
+    //     return;
+    // }
     let code = req.query?.code;
     let code_verifier = req.query?.code_verifier;
     if (!code || !code_verifier) {
@@ -110,6 +110,9 @@ app.get('/callback', async (req, res) => {
         return;
     }
     let sessionData = await getToken(code, code_verifier);
+    if (sessionData.access_token === undefined) {
+        return;
+    }
     req.session.user = {
         accessToken: sessionData.access_token,
         tokenType: sessionData.token_type,
@@ -117,19 +120,15 @@ app.get('/callback', async (req, res) => {
         refreshToken: sessionData.refresh_token,
         scope: sessionData.scope
     };
+    console.log(req.session.user);
     res.setHeader('Content-Type', 'application/json');
-    if (req.session.user?.accessToken === undefined) {
-        res.status(401)
-        res.send({"error": "invalid auth code"});
-        return;
-    }
     res.send({"message": "successful callback"});
 });
 
-app.get('/profile', async (req, res) => {
+app.get('/playlists', async (req, res) => {
     let accessToken = req.session.user?.accessToken;
-    console.log("access token " + req.session.user?.accessToken);
-    const result = await fetch(`https://api.spotify.com/v1/me`, {
+    console.log("playlist access token " + req.session.user?.accessToken);
+    await fetch(`https://api.spotify.com/v1/me/playlists`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -137,26 +136,6 @@ app.get('/profile', async (req, res) => {
         },
         credentials: "include",
     }).then((response) => response.json()).then((data) => res.send({data}))
-    // .then((profile) => {
-    //     res.send(JSON.stringify(profile));
-    // }).catch((error) => {
-    //     console.log(error);
-    // });
-})
-
-app.get('/playlists', async (req, res) => {
-    let access_token = req.session.user?.access_token;
-    let user_id = req.query.userId;
-    const body = await fetch(`https://api.spotify.com/v1/users/${user_id}/playlists`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${access_token}`
-        },
-        credentials: "include",
-    }).then((res) => {
-        console.log(res);
-        return res.body;
-    });
 })
 
 app.get('/refresh_token', function (req, res) {
