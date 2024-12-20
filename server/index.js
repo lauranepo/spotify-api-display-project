@@ -97,11 +97,6 @@ app.get('/login', async (req, res) => {
 
 // Get access token from auth
 app.get('/callback', async (req, res) => {
-    // if (req.session.user !== undefined) {
-    //     console.log("callback user data " + JSON.stringify(req.session.user))
-    //     res.send({"message": "already authenticated"});
-    //     return;
-    // }
     let code = req.query?.code;
     let code_verifier = req.query?.code_verifier;
     if (!code || !code_verifier) {
@@ -129,6 +124,20 @@ app.get('/playlists', async (req, res) => {
     let accessToken = req.session.user?.accessToken;
     console.log("playlist access token " + req.session.user?.accessToken);
     await fetch(`https://api.spotify.com/v1/me/playlists`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        credentials: "include",
+    }).then((response) => response.json()).then((data) => res.send({data}))
+})
+
+app.get('/playlistDetails', async (req, res) => {
+    let accessToken = req.session.user?.accessToken;
+    let playlistId = req.query.playlistId;
+    console.log("track access token " + req.session.user?.accessToken);
+    await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${accessToken}`,

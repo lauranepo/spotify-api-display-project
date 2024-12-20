@@ -25,32 +25,6 @@ export default function Playlist() {
   const [popularityAverage, setPopularityAverage] = useState();
   const [percentExplicit, setPercentExplicit] = useState();
 
-  const getPlaylistDetails = async () => {
-    if (!playlist_id) {
-      console.error("playlistId is undefined");
-      return;
-    } else if (!token) {
-      console.error("missing auth token");
-      return;
-    }
-    try {
-      const { data } = await axios.get(
-        `https://api.spotify.com/v1/playlists/${encodeURIComponent(
-          playlist_id,
-        )}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      setPlaylistDetails(data);
-      setTracks(data.tracks.items);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   // set state for tracks
   const getPopularityAverage = () => {
     let popularitySum = 0;
@@ -71,37 +45,27 @@ export default function Playlist() {
     }
   };
 
-  const getAudioFeatures = async () => {
-    try {
-      if (!playlist_id) {
-        console.error("missing track_ids");
-        return;
-      }
-      if (!token) {
-        console.error("missing auth token");
-        return;
-      }
-      const { data } = await axios.get(
-        `https://api.spotify.com/v1/audio-features/ids=${encodeURIComponent(
-          tracks,
-        )}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      setAudioFeatures(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
-    if (token && playlist_id) {
-      getPlaylistDetails(playlist_id);
-    }
-  }, [token, playlist_id]);
+    const getPlaylistDetails = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:8080/playlistDetails`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            withCredentials: true,
+            params: { playlistId: playlist_id },
+          },
+        );
+        setPlaylistDetails(data.data);
+        setTracks(data.data.tracks.items);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getPlaylistDetails();
+  }, []);
 
   useEffect(() => {
     if (playlistDetails?.tracks?.items) {
@@ -147,7 +111,7 @@ export default function Playlist() {
               playlist analyzer
             </Typography>
             <Button
-              href="/dashboard"
+              href="/"
               float="right"
               variant="contained"
               style={{ backgroundColor: "#ffcdb2", fontWeight: "bold" }}
