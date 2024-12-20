@@ -8,9 +8,7 @@ import {
   AppBar,
   Toolbar,
   Container,
-  Paper,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import TrackCards from "@/app/components/TrackCards";
@@ -21,7 +19,6 @@ export default function Playlist() {
   const [token, setToken] = useState("");
   const [playlistDetails, setPlaylistDetails] = useState([]);
   const [tracks, setTracks] = useState([]);
-  const [audioFeatures, setAudioFeatures] = useState({});
   const [popularityAverage, setPopularityAverage] = useState();
   const [percentExplicit, setPercentExplicit] = useState();
 
@@ -93,15 +90,6 @@ export default function Playlist() {
     setToken(token);
   }, []);
 
-  const Item = styled(Paper)(({ theme }) => ({
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: "center",
-    ...theme.applyStyles("dark", {
-      backgroundColor: "#1A2027",
-    }),
-  }));
-
   return (
     <>
       <Box sx={{ flexGrow: 1, backgroundColor: "#ffcdb2" }}>
@@ -121,52 +109,40 @@ export default function Playlist() {
           </Toolbar>
         </AppBar>
       </Box>
-      <Container style={{ marginTop: 80, backgroundColor: "#e5989b" }}>
-        <Item elevation={0}>
-          <Typography variant="h3">{playlistDetails.name}</Typography>
-          <Typography variant="h5">
-            created by{" "}
-            <a
-              href={`https://open.spotify.com/user/${playlistDetails.owner?.id}`}
-              target="_blank"
-            >
-              {playlistDetails.owner?.display_name}
-            </a>
-          </Typography>
-        </Item>
-        <Item elevation={0}>
-          {playlistDetails?.images && (
-            <Box
-              component="img"
-              sx={{ height: 250 }}
-              alt="playlist cover"
-              src={playlistDetails.images[0].url}
-            />
-          )}
-        </Item>
-        <Item elevation={0}>
-          <Typography>
-            avg popularity score:{" "}
-            {popularityAverage !== undefined
-              ? popularityAverage.toFixed(2)
-              : "error"}
-          </Typography>
-        </Item>
-        <Item elevation={0}>
-          <Typography>
-            percent explicit:{" "}
-            {percentExplicit !== undefined
-              ? percentExplicit.toFixed(2)
-              : "error"}
-            %
-          </Typography>
-        </Item>
-        <Item elevation={0}>
-          <Typography variant="h4" sx={{ paddingTop: 4 }}>
-            tracks in playlist
-          </Typography>
-          <TrackCards tracks={tracks} />
-        </Item>
+      <Container style={{ marginTop: 80, textAlign: "center" }}>
+        <Typography variant="h3">{playlistDetails.name}</Typography>
+        <Typography variant="h5">
+          created by{" "}
+          <a
+            href={`https://open.spotify.com/user/${playlistDetails.owner?.id}`}
+            target="_blank"
+          >
+            {playlistDetails.owner?.display_name}
+          </a>
+        </Typography>
+        {playlistDetails?.images && (
+          <Box
+            component="img"
+            sx={{ height: 250 }}
+            alt="playlist cover"
+            src={playlistDetails.images[0].url}
+          />
+        )}
+        <Typography>
+          avg popularity score:{" "}
+          {popularityAverage !== undefined
+            ? popularityAverage.toFixed(2)
+            : "error"}
+        </Typography>
+        <Typography>
+          percent explicit:{" "}
+          {percentExplicit !== undefined ? percentExplicit.toFixed(2) : "error"}
+          %
+        </Typography>
+        <Typography variant="h4" sx={{ paddingTop: 4 }}>
+          tracks in playlist
+        </Typography>
+        <TrackCards tracks={tracks} />
       </Container>
     </>
   );

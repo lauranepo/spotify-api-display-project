@@ -41,7 +41,6 @@ const generateRandomString = (length) => {
 }
 
 function sha256(plain) { 
-    // returns promise ArrayBuffer
     const encoder = new TextEncoder();
     const data = encoder.encode(plain);
     return crypto.subtle.digest('SHA-256', data);
@@ -98,13 +97,13 @@ app.get('/login', async (req, res) => {
 // Get access token from auth
 app.get('/callback', async (req, res) => {
     let code = req.query?.code;
-    let code_verifier = req.query?.code_verifier;
-    if (!code || !code_verifier) {
+    let codeVerifier = req.query?.code_verifier;
+    if (!code || !codeVerifier) {
         res.status(401)
         res.send({"error": "no code or code verifier"});
         return;
     }
-    let sessionData = await getToken(code, code_verifier);
+    let sessionData = await getToken(code, codeVerifier);
     if (sessionData.access_token === undefined) {
         return;
     }
@@ -122,7 +121,6 @@ app.get('/callback', async (req, res) => {
 
 app.get('/playlists', async (req, res) => {
     let accessToken = req.session.user?.accessToken;
-    console.log("playlist access token " + req.session.user?.accessToken);
     await fetch(`https://api.spotify.com/v1/me/playlists`, {
         method: 'GET',
         headers: {
@@ -136,7 +134,6 @@ app.get('/playlists', async (req, res) => {
 app.get('/playlistDetails', async (req, res) => {
     let accessToken = req.session.user?.accessToken;
     let playlistId = req.query.playlistId;
-    console.log("track access token " + req.session.user?.accessToken);
     await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
         method: 'GET',
         headers: {
@@ -147,8 +144,8 @@ app.get('/playlistDetails', async (req, res) => {
     }).then((response) => response.json()).then((data) => res.send({data}))
 })
 
-app.get('/refresh_token', function (req, res) {
-    var refresh_token = req.query.refresh_token;
+app.get('/refreshToken', function (req, res) {
+    var refreshToken = req.query.refresh_token;
     var authOptions = {
         url: 'https://accounts.spotify.com/api/token',
         headers: {
@@ -157,18 +154,18 @@ app.get('/refresh_token', function (req, res) {
         },
         form: {
             grant_type: 'refresh_token',
-            refresh_token: refresh_token
+            refresh_token: refreshToken
         },
         json: true
     };
 
     request.post(authOptions, function (error, response, body) {
         if (!error && response.statusCode === 200) {
-            var access_token = body.access_token,
-                refresh_token = body.refresh_token || refresh_token;
+            var accessToken = body.access_token,
+                refreshToken = body.refreshToken || refreshToken;
             res.send({
-                'access_token': access_token,
-                'refresh_token': refresh_token
+                'access_token': accessToken,
+                'refresh_token': refreshToken
             });
         }
     });

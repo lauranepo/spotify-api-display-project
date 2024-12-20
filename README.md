@@ -1,5 +1,18 @@
-readme last updated 12/01/2024
+# README.md
 
-![image](https://github.com/user-attachments/assets/8ecaae1c-c28a-445f-8cdc-b6d45cefaa1c)
+last updated 12/20/2024
 
-![image](https://github.com/user-attachments/assets/b63caae2-bc80-4e93-86be-4b9a69700dc2)
+## Progress tracking
+
+### To-do
+
+- switch fetch calls in server to axios
+- implement back to playlists functionality (return to dashboard within session)
+- update styles
+- implement refresh token call 
+
+### Done so far
+
+- PKCE authorization for access token
+- Using express-session to manage user sessions
+- Playlists and slug page for playlists are rendering
