@@ -12,7 +12,7 @@ import axios from "axios";
 export default function NavBar({ props }) {
   const onClick = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/login");
+      const response = await axios.get("http://localhost:8080/login", {withCredentials: true});
       console.log(response.data);
       const { url, codeVerifier } = response.data;
       window.location.href = url;

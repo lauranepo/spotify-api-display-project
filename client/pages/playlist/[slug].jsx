@@ -48,9 +48,6 @@ export default function Playlist() {
         const { data } = await axios.get(
           `http://localhost:8080/playlistDetails`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
             withCredentials: true,
             params: { playlistId: playlist_id },
           },
