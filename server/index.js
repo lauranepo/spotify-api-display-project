@@ -78,6 +78,15 @@ const getToken = async (code, codeVerifier) => {
     }
 };
 
+app.get('/user', (req, res) => {
+    const user = req.session?.user;
+    if (user) {
+        res.send({ user: user });
+    } else {
+        res.send({ user: null });
+    }
+});
+
 app.get('/login', async (req, res) => {
     const state = generateRandomString(16);
     const codeVerifier = generateRandomString(64);
@@ -99,13 +108,22 @@ app.get('/login', async (req, res) => {
     res.json({ url: spotifyAuthUrl, code_verifier: codeVerifier });
 });
 
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.send({ message: "logged out" });
+});
+
 // Get access token from auth
 app.get('/callback', async (req, res) => {
-    let code = req.query?.code;
+    let code = req.query?.code || req.session?.code;
     let codeVerifier = req.query?.code_verifier;
     if (!code || !codeVerifier) {
         res.status(401)
         res.send({"error": "no code or code verifier"});
+        return;
+    }
+    if (req.session?.user?.accessToken) {
+        res.send({"message": "already authenticated"});
         return;
     }
     let sessionData = await getToken(code, codeVerifier);
@@ -119,6 +137,7 @@ app.get('/callback', async (req, res) => {
         refreshToken: sessionData.refresh_token,
         scope: sessionData.scope
     };
+    req.session.code = code;
     console.log(req.session.user);
     res.setHeader('Content-Type', 'application/json');
     res.send({"message": "successful callback"});

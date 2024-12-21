@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PlaylistCards from "@/app/components/PlaylistCards";
-import { Container } from "@mui/material";
+import { Box, Container } from "@mui/material";
+import SimpleAppBar from "@/app/components/SimpleAppBar";
 
 const Dashboard = () => {
   const [playlists, setPlaylists] = useState(null);
@@ -30,7 +31,6 @@ const Dashboard = () => {
   }, [callback]);
 
   useEffect(() => {
-    if (callback) {
       const getPlaylists = async () => {
         await axios
           .get("http://localhost:8080/playlists", { withCredentials: true })
@@ -38,15 +38,17 @@ const Dashboard = () => {
             setPlaylists(res.data.data.items);
           });
       };
-      if (callback) {
+      if (callback || playlists === null) {
         getPlaylists();
       }
-    }
-  }, [callback]);
+  }, []);
 
   return (
     <Container sx={{padding: "30px", margin: "auto"}}>
-      <PlaylistCards playlists={playlists} />
+      <SimpleAppBar />
+      <Box sx={{ paddingTop: "70px" }}>
+        <PlaylistCards playlists={playlists} />
+      </Box>
     </Container>
   );
 };

@@ -1,7 +1,7 @@
 "use client";
 "use strict";
 
-import * as React from "react";
+import { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -9,7 +9,9 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import axios from "axios";
 
-export default function SimpleAppBar({ isLoggedIn }) {
+export default function SimpleAppBar() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const onClick = async () => {
     try {
       const response = await axios.get("http://localhost:8080/login", {
@@ -26,9 +28,39 @@ export default function SimpleAppBar({ isLoggedIn }) {
     }
   };
 
-  const onLogout = () => {
-    window.localStorage.clear("code_verifier");
+  const onLogout = async () => {
+    try {
+      await axios.get("http://localhost:8080/logout", {
+        withCredentials: true,
+      });
+      window.location.href = "http://localhost:3000";
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  useEffect(() => {
+    const determineIsAuthenticated = async () => {
+      try {
+        await axios.get("http://localhost:8080/user", {
+          withCredentials: true,
+        }).then((response) => {
+          console.log(response.data.user !== undefined);
+          if (response.data.user !== undefined) {
+            setIsAuthenticated(true);
+            return;
+          }
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    determineIsAuthenticated();
+  }, [])
+
+  useEffect(() => {
+    console.log(isAuthenticated);
+  }, [isAuthenticated])
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -38,12 +70,12 @@ export default function SimpleAppBar({ isLoggedIn }) {
             playlist analyzer
           </Typography>
           <Button
-            onClick={onClick}
+            onClick={isAuthenticated ? onLogout : onClick}
             float="right"
             variant="contained"
             style={{ backgroundColor: "#ffcdb2", fontWeight: "bold" }}
           >
-            Login
+            {isAuthenticated ? "Logout" : "Login"}
           </Button>
         </Toolbar>
       </AppBar>
