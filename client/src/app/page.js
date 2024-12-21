@@ -12,12 +12,9 @@ export default function Home() {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/", {
+        const response = await axios.get("http://localhost:8080/user", {
           withCredentials: true,
         });
-        if (response.user !== null) {
-          // router.push("/dashboard");
-        };
       } catch (error) {
         console.error(error);
       }

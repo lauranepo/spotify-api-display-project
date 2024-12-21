@@ -38,9 +38,7 @@ const Dashboard = () => {
             setPlaylists(res.data.data.items);
           });
       };
-      if (callback || playlists === null) {
-        getPlaylists();
-      }
+      getPlaylists();
   }, []);
 
   return (
