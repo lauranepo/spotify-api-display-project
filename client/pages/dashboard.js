@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PlaylistCards from "@/app/components/PlaylistCards";
+import { Container } from "@mui/material";
 
 const Dashboard = () => {
-  const [codeVerifier, setCodeVerifier] = useState(null);
   const [playlists, setPlaylists] = useState(null);
   const [callback, setCallback] = useState(false);
-
-  useEffect(() => {
-    if (codeVerifier === null) {
-      setCallback(false);
-    }
-  }, [codeVerifier]);
 
   useEffect(() => {
     const getCallback = async () => {
@@ -51,9 +45,9 @@ const Dashboard = () => {
   }, [callback]);
 
   return (
-    <div>
+    <Container sx={{padding: "30px", margin: "auto"}}>
       <PlaylistCards playlists={playlists} />
-    </div>
+    </Container>
   );
 };
 

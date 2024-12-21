@@ -3,18 +3,19 @@ import express from 'express'
 import cors from 'cors';
 import querystring from 'querystring';
 import crypto from "node:crypto";
-import fetch from "node-fetch";
+import axios from "axios";
 import session from "express-session";
 
 const PORT = process.env.SERVER_PORT;
 const CLIENT_ID = process.env.CLIENT_ID;
 const REDIRECT_URI = process.env.REDIRECT_URI;
+const SESSION_SECRET = process.env.SESSION_SECRET;
 
 const app = express();
 
 // Set up session management
 app.use(session({
-    secret: 'keyboard cat',
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
 }));
@@ -53,25 +54,29 @@ function base64urlencode(buffer) {
         .replace(/=+$/, '');
 }
 
+// Update getToken function
 const getToken = async (code, codeVerifier) => {
-    const params = new URLSearchParams({
-        client_id: CLIENT_ID,
-        grant_type: 'authorization_code',
-        code: code,
-        redirect_uri: REDIRECT_URI,
-        code_verifier: codeVerifier,
-    })
-    const body = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        credentials: "include",
-        body: params
-    });
-    const response = await body.json();
-    return response;
-}
+    try {
+        const response = await axios.post('https://accounts.spotify.com/api/token', 
+            querystring.stringify({
+                client_id: CLIENT_ID,
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: REDIRECT_URI,
+                code_verifier: codeVerifier
+            }), 
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                withCredentials: true
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("error getting token");
+    }
+};
 
 app.get('/login', async (req, res) => {
     const state = generateRandomString(16);
@@ -104,7 +109,7 @@ app.get('/callback', async (req, res) => {
         return;
     }
     let sessionData = await getToken(code, codeVerifier);
-    if (sessionData.access_token === undefined) {
+    if (sessionData?.access_token === undefined) {
         return;
     }
     req.session.user = {
@@ -121,27 +126,33 @@ app.get('/callback', async (req, res) => {
 
 app.get('/playlists', async (req, res) => {
     let accessToken = req.session.user?.accessToken;
-    await fetch(`https://api.spotify.com/v1/me/playlists`, {
-        method: 'GET',
+    await axios.get('https://api.spotify.com/v1/me/playlists', {
         headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         },
-        credentials: "include",
-    }).then((response) => response.json()).then((data) => res.send({data}))
+        withCredentials: true
+    }).then((response) => {
+        res.send({data: response.data});
+    }).catch((error) => {
+        console.error("error getting playlists", error);
+    });  
 })
 
 app.get('/playlistDetails', async (req, res) => {
     let accessToken = req.session.user?.accessToken;
     let playlistId = req.query.playlistId;
-    await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
-        method: 'GET',
+    await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}`, {
         headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         },
-        credentials: "include",
-    }).then((response) => response.json()).then((data) => res.send({data}))
+        withCredentials: true
+    }).then((response) => {
+        res.send({data: response.data});
+    }).catch((error) => {
+        console.error("error getting playlist details", error);
+    }); 
 })
 
 app.get('/refreshToken', function (req, res) {
