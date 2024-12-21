@@ -45,8 +45,7 @@ export default function SimpleAppBar() {
         await axios.get("http://localhost:8080/user", {
           withCredentials: true,
         }).then((response) => {
-          console.log(response.data.user !== undefined);
-          if (response.data.user !== undefined) {
+          if (response.data.user) {
             setIsAuthenticated(true);
             return;
           }

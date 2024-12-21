@@ -81,9 +81,9 @@ const getToken = async (code, codeVerifier) => {
 app.get('/user', (req, res) => {
     const user = req.session?.user;
     if (user) {
-        res.send({ user: user });
+        res.send({ user: true });
     } else {
-        res.send({ user: null });
+        res.send({ user: false });
     }
 });
 
