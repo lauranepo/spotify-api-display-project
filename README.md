@@ -1,13 +1,12 @@
 # README.md
 
-last updated 12/20/2024
+last updated 07/28/2025
 
 ## Progress tracking
 
 ### To-do
 
 - switch fetch calls in server to axios
-- implement back to playlists functionality (return to dashboard within session)
 - update styles
 - implement refresh token call 
 
@@ -16,3 +15,4 @@ last updated 12/20/2024
 - PKCE authorization for access token
 - Using express-session to manage user sessions
 - Playlists and slug page for playlists are rendering
+- Implemented back to playlists functionality (return to dashboard within session)
