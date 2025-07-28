@@ -20,6 +20,7 @@ const Dashboard = () => {
             withCredentials: true,
           })
           .then((res) => {
+            console.log("Callback success:", res.data);
             setCallback(true);
           });
       } catch (error) {
@@ -28,7 +29,7 @@ const Dashboard = () => {
       }
     };
     getCallback();
-  }, [callback]);
+  }, []);
 
   useEffect(() => {
       const getPlaylists = async () => {
@@ -38,8 +39,10 @@ const Dashboard = () => {
             setPlaylists(res.data.data.items);
           });
       };
-      getPlaylists();
-  }, []);
+      if (callback) {
+        getPlaylists();
+      }
+  }, [callback]);
 
   return (
     <Container sx={{padding: "30px", margin: "auto"}}>
