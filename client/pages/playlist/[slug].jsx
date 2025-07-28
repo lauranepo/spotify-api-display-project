@@ -55,7 +55,7 @@ export default function Playlist() {
         setPlaylistDetails(data.data);
         setTracks(data.data.tracks.items);
       } catch (error) {
-        console.error(error);
+        console.error("error fetching playlists");
       }
     };
     getPlaylistDetails();
@@ -120,7 +120,7 @@ export default function Playlist() {
         {playlistDetails?.images && (
           <Box
             component="img"
-            sx={{ height: 250 }}
+            sx={{ height: 250, width: 250, objectFit: "cover" }}
             alt="playlist cover"
             src={playlistDetails.images[0].url}
           />
