@@ -90,7 +90,7 @@ export default function Playlist() {
   return (
     <>
       <Box sx={{ flexGrow: 1, backgroundColor: "#ffcdb2" }}>
-        <AppBar position="fixed" style={{ backgroundColor: "#e5989b" }}>
+        <AppBar position="fixed" style={{ backgroundColor: "#B55085" }}>
           <Toolbar>
             <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
               playlist analyzer
@@ -99,7 +99,11 @@ export default function Playlist() {
               href="/"
               float="right"
               variant="contained"
-              style={{ backgroundColor: "#ffcdb2", fontWeight: "bold" }}
+              style={{
+                backgroundColor: "white",
+                color: "#B55085",
+                fontWeight: "bold",
+              }}
             >
               back to playlists
             </Button>

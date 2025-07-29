@@ -32,20 +32,20 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-      const getPlaylists = async () => {
-        await axios
-          .get("http://localhost:8080/playlists", { withCredentials: true })
-          .then((res) => {
-            setPlaylists(res.data.data.items);
-          });
-      };
-      if (callback) {
-        getPlaylists();
-      }
+    const getPlaylists = async () => {
+      await axios
+        .get("http://localhost:8080/playlists", { withCredentials: true })
+        .then((res) => {
+          setPlaylists(res.data.data.items);
+        });
+    };
+    if (callback) {
+      getPlaylists();
+    }
   }, [callback]);
 
   return (
-    <Container sx={{padding: "30px", margin: "auto"}}>
+    <Container sx={{ padding: "30px", margin: "auto" }}>
       <SimpleAppBar />
       <Box sx={{ paddingTop: "70px" }}>
         <PlaylistCards playlists={playlists} />
