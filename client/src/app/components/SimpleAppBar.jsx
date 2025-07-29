@@ -42,28 +42,30 @@ export default function SimpleAppBar() {
   useEffect(() => {
     const determineIsAuthenticated = async () => {
       try {
-        await axios.get("http://localhost:8080/user", {
-          withCredentials: true,
-        }).then((response) => {
-          if (response.data.user) {
-            setIsAuthenticated(true);
-            return;
-          }
-        });
+        await axios
+          .get("http://localhost:8080/user", {
+            withCredentials: true,
+          })
+          .then((response) => {
+            if (response.data.user) {
+              setIsAuthenticated(true);
+              return;
+            }
+          });
       } catch (error) {
         console.error(error);
       }
     };
     determineIsAuthenticated();
-  }, [])
+  }, []);
 
   useEffect(() => {
     console.log(isAuthenticated);
-  }, [isAuthenticated])
+  }, [isAuthenticated]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed" style={{ backgroundColor: "#e5989b" }}>
+      <AppBar position="fixed" style={{ backgroundColor: "#B55085" }}>
         <Toolbar>
           <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
             playlist analyzer
@@ -72,7 +74,12 @@ export default function SimpleAppBar() {
             onClick={isAuthenticated ? onLogout : onClick}
             float="right"
             variant="contained"
-            style={{ backgroundColor: "#ffcdb2", fontWeight: "bold" }}
+            sx={{
+              fontFamily: "Roboto, sans-serif",
+              backgroundColor: "white",
+              color: "#B55085",
+              fontWeight: "bold",
+            }}
           >
             {isAuthenticated ? "Logout" : "Login"}
           </Button>
