@@ -59,10 +59,6 @@ export default function SimpleAppBar() {
     determineIsAuthenticated();
   }, []);
 
-  useEffect(() => {
-    console.log(isAuthenticated);
-  }, [isAuthenticated]);
-
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" style={{ backgroundColor: "#B55085" }}>

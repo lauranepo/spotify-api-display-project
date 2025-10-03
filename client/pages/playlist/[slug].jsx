@@ -1,5 +1,6 @@
 "use strict";
 
+import React from "react";
 import axios from "axios";
 import {
   Box,
@@ -16,7 +17,7 @@ import TrackCards from "@/app/components/TrackCards";
 export default function Playlist() {
   const router = useRouter();
   const playlist_id = router.query.slug;
-  const [token, setToken] = useState("");
+  const [, setToken] = useState("");
   const [playlistDetails, setPlaylistDetails] = useState([]);
   const [tracks, setTracks] = useState([]);
   const [popularityAverage, setPopularityAverage] = useState();
@@ -55,7 +56,7 @@ export default function Playlist() {
         setPlaylistDetails(data.data);
         setTracks(data.data.tracks.items);
       } catch (error) {
-        console.error("error fetching playlists");
+        console.error(error, "error fetching playlists");
       }
     };
     getPlaylistDetails();
@@ -96,7 +97,7 @@ export default function Playlist() {
               playlist analyzer
             </Typography>
             <Button
-              href="/"
+              href="/dashboard"
               float="right"
               variant="contained"
               style={{
@@ -117,6 +118,7 @@ export default function Playlist() {
           <a
             href={`https://open.spotify.com/user/${playlistDetails.owner?.id}`}
             target="_blank"
+            rel="noreferrer"
           >
             {playlistDetails.owner?.display_name}
           </a>

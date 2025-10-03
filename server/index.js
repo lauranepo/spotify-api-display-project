@@ -8,6 +8,7 @@ import session from "express-session";
 
 const PORT = process.env.SERVER_PORT;
 const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
@@ -74,7 +75,7 @@ const getToken = async (code, codeVerifier) => {
         );
         return response.data;
     } catch (error) {
-        console.error("error getting token");
+        console.error(error, "error getting token");
     }
 };
 
@@ -115,8 +116,9 @@ app.get('/logout', (req, res) => {
 
 // Get access token from auth
 app.get('/callback', async (req, res) => {
-    let code = req.query?.code || req.session?.code;
+    let code = req.query?.code;
     let codeVerifier = req.query?.code_verifier;
+    
     if (!code || !codeVerifier) {
         res.status(401)
         res.send({"error": "no code or code verifier"});
@@ -164,7 +166,6 @@ app.get('/playlists', async (req, res) => {
 
 app.get('/playlistDetails', async (req, res) => {
     let accessToken = req.session.user?.accessToken;
-    // console.log(accessToken)
     let playlistId = req.query.playlistId;
     await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}`, {
         headers: {
@@ -185,7 +186,7 @@ app.get('/refreshToken', function (req, res) {
         url: 'https://accounts.spotify.com/api/token',
         headers: {
             'content-type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + (new Buffer.from(CLIENT_ID + ':' + client_secret).toString('base64'))
+            'Authorization': 'Basic ' + (new Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
         },
         form: {
             grant_type: 'refresh_token',
@@ -194,7 +195,7 @@ app.get('/refreshToken', function (req, res) {
         json: true
     };
 
-    request.post(authOptions, function (error, response, body) {
+    req.post(authOptions, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             var accessToken = body.access_token,
                 refreshToken = body.refreshToken || refreshToken;
